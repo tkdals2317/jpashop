@@ -12,6 +12,7 @@ public class Delivery {
 
     @Id
     @Column(name = "delivery_id", nullable = false)
+    @GeneratedValue
     private Long id;
 
     @OneToOne(mappedBy = "delivery", fetch = FetchType.LAZY)
