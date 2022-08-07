@@ -97,5 +97,26 @@ public class OrderRepository {
     }
 
 
+    public List<Order> findAllWithItem() {
+        // Order와 OrderItem이 조인되면서 데이터가 중복되는 문제가 생긴다 -> distinct 사용해서 해결
+        // DB에서는 distinct 완전히 같을 때만 중복 제거가 된다 but JPA의 distinct는 그것까지 해결해준다
+        // but 페이징 불가능하고 컬렉션의 패치조인은 딱 하나만 가능하다
+        // to One 관계는 패치조인 상관없이 쓸 수 있다
+        return em.createQuery("select distinct o from Order o" +
+                        " join fetch o.member m" +
+                        " join fetch o.delivery d" +
+                        " join fetch o.orderItems oi" +
+                        " join fetch oi.item", Order.class)
+                .getResultList();
+    }
+
+    public List<Order> findAllWithMemberDelivery(int offset, int limit) {
+        return em.createQuery("select o from Order o" +
+                        " join fetch o.member m" +
+                        " join fetch o.delivery d", Order.class)
+                .setFirstResult(offset)
+                .setMaxResults(limit)
+                .getResultList();
+    }
 }
 
